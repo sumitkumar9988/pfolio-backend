@@ -8,8 +8,9 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(authController.protect, userController.userDetail)
-  .patch(authController.protect, userController.updateUserDetail)
+  .get(authController.protect, userController.getProfile)
+  .post(authController.protect, userController.createProfile)
+  .patch(authController.protect, userController.updateProfile)
   .delete(authController.protect, userController.deleteUser);
 
 router.patch(

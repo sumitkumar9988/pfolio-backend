@@ -21,9 +21,9 @@ const profileSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "User",
     },
-    prooject: [{ type : mongoose.Schema.ObjectId, ref: 'Project' }], 
-    education: [{ type : mongoose.Schema.ObjectId, ref: 'Education' }],
-    experience: [{ type : mongoose.Schema.ObjectId, ref: 'Experience' }],
+    prooject: [{ type: mongoose.Schema.ObjectId, ref: "Project" }],
+    education: [{ type: mongoose.Schema.ObjectId, ref: "Education" }],
+    experience: [{ type: mongoose.Schema.ObjectId, ref: "Experience" }],
     email: {
       type: String,
       required: [true, "Please provide your email"],
@@ -36,13 +36,34 @@ const profileSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["male", "female","other"],
+      enum: ["male", "female", "other"],
     },
 
     photo: {
       type: String,
     },
-
+    backGroundColor: {
+      type: String,
+    },
+    textColor: {
+      type: String,
+    },
+    showBio: {
+        type: Boolean,
+        default: true,
+    },
+    showEducationSection: {
+        type: Boolean,
+        default: true,
+    },
+    showExperienceSection: {
+        type: Boolean,
+        default: true,
+    },
+    showContactSection: {
+        type: Boolean,
+        default: true,
+    },
     skills: {
       type: [String],
     },

@@ -1,5 +1,6 @@
 const User = require("./../models/userModel");
 const Education = require("./../models/educationModel");
+const Profile = require("./../models/profileModel");
 const Experience = require("./../models/educationModel");
 const AppError = require("./../utils/AppError");
 const catchAsync = require("./../utils/catchAsync");
@@ -20,47 +21,102 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.userDetail = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+exports.getProfile = catchAsync(async (req, res, next) => {
+  console.log(req.user);
+  if (!req.user.profile) {
+    return next(
+      new AppError(
+        "You don`t have any profile! Please create your profile",
+        404
+      )
+    );
+  }
+  const profile = await Profile.findById(req.user.profile);
+  if (!profile) {
+    return next(
+      new AppError(
+        "You don`t have any profile! Please create your profile",
+        404
+      )
+    );
+  }
   res.status(200).json({
     status: "success",
-    data: {
-      user,
-    },
+    data: profile,
   });
 });
 
-exports.updateUserDetail = catchAsync(async (req, res, next) => {
-  data = req.body;
-  const filteredBody = filterObj(
-    data,
-    "email",
-    "mobileNumber",
-    "username",
-    "twitterAcount",
-    "facebookAccount",
-    "linkedInAccount",
-    "InstaAccount",
-    "mediumAccount",
-    "dribbleAccount",
-    "name",
-    "photo",
-    "bio",
-    "skills",
-    "location",
-    "profession",
-    "lookingForJob",
-    "intrestedIn",
-    "gender"
+exports.createProfile = catchAsync(async (req, res, next) => {
+  const profile = await Profile.findById(req.user.profile);
+  if (profile) {
+    const updatedProfile = await Profile.findByIdAndUpdate(
+      req.user.profile,
+      {
+        name: req.body.name,
+        photo: req.body.photo,
+        username: req.body.username,
+        bio: req.body.bio,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: updatedProfile,
+    });
+  }
+
+  const newProfile = await Profile.create({
+    user: req.user.id,
+    name: req.body.name,
+    email: req.user.email,
+    photo: req.body.photo,
+    username: req.body.username,
+    bio: req.body.bio,
+  });
+
+  await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      profile: newProfile._id,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
   );
-  await User.findByIdAndUpdate(req.user.id, filteredBody, {
+  res.status(200).json({
+    status: "success",
+    data: newProfile,
+  });
+});
+
+exports.updateProfile = catchAsync(async (req, res, next) => {
+  const profile = await Profile.findById(req.user.profile);
+  if (!profile || !req.user.profile) {
+    return next(
+      new AppError(
+        "You don`t have any profile! Please create your profile",
+        404
+      )
+    );
+  }
+  data = req.body;
+  // const filteredBody = filterObj(
+  //   data,
+  //   "email",
+  // );
+  await Profile.findByIdAndUpdate(req.user.profile, req.body, {
     new: true,
     runValidators: true,
   });
 
   res.status(200).json({
     status: "success",
-    message: "User details update successfully!",
+    message: "Profile details update successfully!",
   });
 });
 
