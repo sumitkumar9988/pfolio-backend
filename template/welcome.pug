@@ -1,0 +1,17 @@
+extends baseEmail
+
+block content
+  p Hi #{firstName},
+  p Welcome to pfolio, we're glad to have you 🎉🙏
+  p  We will help you build your strong profile to show yours skills in tech industry and help you in getting jobs fast
+  table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
+    tbody
+      tr
+        td(align='left')
+          table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+            tbody
+              tr
+                td
+                  a(href=`${url}`, target='_blank') fill your details
+  p We will always keeps you update through emails about tech industry and send you notification about new jobs . Thank you for signing up firstletter.
+  p - Sumit kumar, CEO pfolio
