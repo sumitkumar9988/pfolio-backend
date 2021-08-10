@@ -120,60 +120,23 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateusername = catchAsync(async (req, res, next) => {
-  const userData = {
-    username: req.body.username,
-  };
 
-  if (!req.body.username) {
-    return next(new AppError("username is required", 404));
-  }
 
-  await User.findByIdAndUpdate(req.user.id, userData, {
-    new: true,
-    runValidators: true,
-  });
-  res.status(200).json({
-    status: "success",
-    message: "Users Details update sucessfull!",
-  });
-});
 
-exports.updateSocialNetworking = catchAsync(async (req, res, next) => {
-  const filteredBody = filterObj(
-    req.body,
-    "twitterAcount",
-    "facebookAccount",
-    "linkedInAccount",
-    "InstaAccount",
-    "gitHubAccount",
-    "mediumAccount"
-  );
-  const user = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true,
-    runValidators: true,
-  });
-  if (!user) {
-    return next(new AppError("There is no such user with these id", 400));
-  }
 
-  res.status(200).json({
-    status: "success",
-    message: "Users Details update successfully!",
-  });
-});
-
-exports.deleteUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(req.user.id, {
+exports.deleteProfile = catchAsync(async (req, res, next) => {
+   await Profile.findByIdAndDelete(req.user.profile, {
     active: false,
   });
-  if (!user) {
-    return next(new AppError("There is no such user with this id", 404));
-  }
+  
+  const user=await User.findById(req.user.id);
+  user.profile=undefined;
+  await user.save();
+
 
   res.status(200).json({
     status: "success",
-    data: "Account Deactivate! You can login your account whenever you want ",
+    data: "Profile is Delete !",
   });
 });
 
