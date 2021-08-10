@@ -4,6 +4,7 @@ const userController = require("./../handler/userHandler");
 const projectController = require("./../handler/projectHandler");
 const router = express.Router();
 
+//  all route related to profile
 
 router
   .route("/")
