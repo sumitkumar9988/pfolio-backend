@@ -20,7 +20,7 @@ router
   .route("/education/:id")
   .get(authController.protect, userController.getEducationDetail)
   .patch(authController.protect, userController.updateEducation)
-  .delete(authController.protect, userController.deleteEducationDetail);
+  .delete(authController.protect, userController.deleteEducation);
 
 router
   .route("/experience")

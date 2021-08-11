@@ -120,23 +120,15 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
   });
 });
 
-
-
-
-
 exports.deleteProfile = catchAsync(async (req, res, next) => {
-   await Profile.findByIdAndDelete(req.user.profile, {
-    active: false,
-  });
-  
-  const user=await User.findById(req.user.id);
-  user.profile=undefined;
+  const user = await User.findById(req.user.id);
+  await Profile.findByIdAndDelete(req.user.profile);
+  user.profile = undefined;
   await user.save();
-
 
   res.status(200).json({
     status: "success",
-    data: "Profile is Delete !",
+    data: "Profile is Delete ",
   });
 });
 
@@ -147,85 +139,90 @@ exports.getEducationDetail = catchAsync(async (req, res, next) => {
   }
   res.status(201).json({
     status: "success",
-    data: {
-      education: education,
-    },
+    data: education,
   });
 });
 
 exports.getAllEducation = catchAsync(async (req, res, next) => {
   const education = await Education.find({
-    user: req.user.id,
+    profile: req.user.profile,
   });
   res.status(201).json({
     status: "success",
     length: education.length,
-    data: {
-      education: education,
-    },
+    data: education,
   });
 });
 
 exports.addEducation = catchAsync(async (req, res, next) => {
-  const education = {
+
+
+  const education= await Education.create({
     institute: req.body.institute,
-    user: req.user.id,
-    basicinfo: req.body.basicinfo,
-    instituteLogo: req.body.image,
-    city: req.body.city,
+    profile: req.user.profile,
+    logo: req.body.image,
     degree: req.body.degree,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
-    grade: req.body.grade,
-    activitiesAndSocieties: req.body.activitiesAndSocieties,
-  };
+  });
 
-  await Education.create(education);
+  const profile = await Profile.findById(req.user.profile);
+  console.log(education._id)
+  profile.education.push(education._id);
+  await profile.save();
 
   res.status(200).json({
     status: "success",
-    message: "new education add successful",
+    message: "New Education Added ",
   });
 });
 
-exports.deleteEducationDetail = catchAsync(async (req, res, next) => {
-  const educationDoc = await Education.findByIdAndDelete(req.params.id);
-  if (!educationDoc) {
-    return next(new AppError("No document found with that ID", 404));
+exports.deleteEducation = catchAsync(async (req, res, next) => {
+  const education = await Education.findById(req.params.id);
+  if (!education) {
+    return next(new AppError("No education found with that ID", 400));
   }
+  if (String(req.user.profile) !== String(education.profile)) {
+    return next(
+      new AppError("You are not authorize to delete this item!", 400)
+    );
+  }
+  await Education.findByIdAndDelete(req.params.id);
   res.status(200).json({
     status: "success",
-    message: "Item delete successfully",
+    message: "Education delete success",
   });
 });
 
 exports.updateEducation = catchAsync(async (req, res, next) => {
-  data = req.body;
-
-  const education = await Education.findByIdAndUpdate(req.params.id, data, {
+  const education = await Experience.findById(req.params.id);
+  if (!education) {
+    return next(new AppError("No education found with that ID", 400));
+  }
+  if (String(req.user.profile) !== String(education.profile)) {
+    return next(
+      new AppError("You are not authorize to delete this item!", 400)
+    );
+  }
+  await Education.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
 
-  if (!education) {
-    return next(new AppError("No document found with that ID", 400));
-  }
   res.status(201).json({
     status: "success",
-    message: "Education update successfully",
+    message: "Education updated",
   });
 });
 
 exports.allUserExeprience = catchAsync(async (req, res, next) => {
   const experience = await Experience.find({
-    user: req.user.id,
+    profile: req.user.profile,
   });
   res.status(201).json({
     status: "success",
     length: experience.length,
-    data: {
-      experience,
-    },
+    data: experience,
   });
 });
 
@@ -236,27 +233,26 @@ exports.getExperienceById = catchAsync(async (req, res, next) => {
   }
   res.status(201).json({
     status: "success",
-    data: {
-      experience,
-    },
+    data: experience,
   });
 });
 
 exports.addExperience = catchAsync(async (req, res, next) => {
   const experience = {
     jobTitle: req.body.jobTitle,
-    user: req.user.id,
+    profile: req.user.profile,
     organization: req.body.organization,
-    organizationLogo: req.body.image,
+    loogo: req.body.image,
     website: req.body.website,
-    remote: req.body.remote,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
-    city: req.body.city,
     duration: req.body.duration,
-    responsibilities: req.body.responsibilities,
   };
   await Experience.create(experience);
+
+  const profile = await Profile.findById(req.user.profile);
+  profile.experience.push(experience._id);
+  await profile.save();
 
   return res.status(200).json({
     status: "success",
