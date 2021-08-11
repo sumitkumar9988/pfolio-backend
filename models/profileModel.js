@@ -21,7 +21,7 @@ const profileSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "User",
     },
-    prooject: [{ type: mongoose.Schema.ObjectId, ref: "Project" }],
+    project: [{ type: mongoose.Schema.ObjectId, ref: "Project" }],
     education: [{ type: mongoose.Schema.ObjectId, ref: "Education" }],
     experience: [{ type: mongoose.Schema.ObjectId, ref: "Experience" }],
     email: {

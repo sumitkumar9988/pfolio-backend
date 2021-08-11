@@ -297,7 +297,6 @@ exports.updateExperience = catchAsync(async (req, res, next) => {
   });
 });
 
-
 exports.addSkills = catchAsync(async (req, res, next) => {
   const skill = req.body.skill;
   const user = await Profile.findById(req.user.profile);
@@ -310,9 +309,15 @@ exports.addSkills = catchAsync(async (req, res, next) => {
 });
 
 exports.removeSkills = catchAsync(async (req, res, next) => {
+  const profile = await Profile.findById(req.user.profile);
+  const index = profile.skills.indexOf(req.body.skill);
+
+  if (index > -1) {
+    profile.skills.splice(index, 1);
+  }
   return res.status(205).json({
     status: "success",
     message:
-      "this API is still in development stage !wait till this goes to production",
+      "skill remove from profile",
   });
 });

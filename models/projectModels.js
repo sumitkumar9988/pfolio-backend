@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const projectSchema = new mongoose.Schema({
-  user: {
+  profile: {
     type: mongoose.Schema.ObjectId,
     ref: "Profile",
   },
@@ -18,7 +18,7 @@ const projectSchema = new mongoose.Schema({
   images: {
     type: [String],
   },
-  projectLogo: {
+  logo: {
     type: String,
     default:
       "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png",
@@ -29,8 +29,8 @@ const projectSchema = new mongoose.Schema({
   language: {
     type: String,
   },
-  demoSample:{
-    type:String,
+  demoSample: {
+    type: String,
   },
   license: String,
   DemoUrl: {

@@ -33,7 +33,7 @@ exports.githubCallBack = catchAsync(async (req, res, next) => {
     gitHubAccount: response.data.login,
   };
   // console.log(githubUserName)
-  await User.findByIdAndUpdate(req.user.id, githubUserName, {
+  await Profile.findByIdAndUpdate(req.user.profile, githubUserName, {
     new: true,
     runValidators: true,
   });
@@ -50,7 +50,7 @@ exports.githubCallBack = catchAsync(async (req, res, next) => {
 
 exports.getAllUserProject = catchAsync(async (req, res, next) => {
   const allProject = await Project.find({
-    user: req.user.id,
+    profile: req.user.profile,
   });
 
   res.status("200").json({
@@ -63,7 +63,7 @@ exports.getAllUserProject = catchAsync(async (req, res, next) => {
 });
 
 exports.refreshNewProject = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await Profile.findById(req.user.profile);
   if (!user.gitHubAccount) {
     return next(new AppError("Please provide your GitHub account", 404));
   }
@@ -73,12 +73,12 @@ exports.refreshNewProject = catchAsync(async (req, res, next) => {
   );
   let projects = data.map((item, index) => {
     return {
-      user: req.user.id,
+      profile: req.user.profile,
       name: item.name,
       repoID: item.id,
       repoUrl: item.url,
       DemoUrl: item.html_url,
-      projectLogo:
+      logo:
         "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png",
       updated_at: item.updated_at,
       description: item.description,
@@ -86,7 +86,7 @@ exports.refreshNewProject = catchAsync(async (req, res, next) => {
   });
 
   const currentProject = await Project.find({
-    user: req.user.id,
+    profile: req.user.profile,
   });
 
   const itemToInsertINtoDatabase = projects.filter((el) => {
@@ -97,10 +97,16 @@ exports.refreshNewProject = catchAsync(async (req, res, next) => {
   // !b.filter(y => y.id === i.id).length
 
   //create multiple documents
-  await Project.insertMany(itemToInsertINtoDatabase);
+ const projectInsertedin= await Project.insertMany(itemToInsertINtoDatabase);
+ console.log(projectInsertedin);
+
+//Add all Project into profile  
+
   const allProject = await Project.find({
-    user: req.user.id,
+    profile: req.user.profile,
   });
+
+
 
   res.status("200").json({
     status: "success",
@@ -135,6 +141,24 @@ exports.updateProjectDetails = catchAsync(async (req, res, next) => {
   if (!project) {
     return next(new AppError("Project not found By id", 404));
   }
+  return res.status(200).json({
+    status: "success",
+    message: "Project Details Update Successully",
+  });
+});
+
+
+exports.deleteProject = catchAsync(async (req, res, next) => {
+ 
+  return res.status(200).json({
+    status: "success",
+    message: "Project Details Update Successully",
+  });
+});
+
+
+exports.createProject = catchAsync(async (req, res, next) => {
+ 
   return res.status(200).json({
     status: "success",
     message: "Project Details Update Successully",

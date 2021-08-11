@@ -46,16 +46,19 @@ router
   .get(authController.protect, projectController.getAllUserProject);
 
 router
-  .route("/project/:id")
-  .get(authController.protect, projectController.getProjectDetails)
-  .patch(authController.protect, projectController.updateProjectDetails);
-
-router
   .route("/project/refesh")
   .get(authController.protect, projectController.refreshNewProject);
 
 router
-  .route("/addskills")
-  .get(authController.protect, userController.addSkills);
+  .route("/project/:id")
+  .get(authController.protect, projectController.getProjectDetails)
+  .post(authController.protect, projectController.createProject)
+  .patch(authController.protect, projectController.updateProjectDetails)
+  .delete(authController.protect, projectController.deleteProject);
+
+router
+  .route("/skills")
+  .post(authController.protect, userController.addSkills)
+  .delete(authController.protect, userController.removeSkills);
 
 module.exports = router;
