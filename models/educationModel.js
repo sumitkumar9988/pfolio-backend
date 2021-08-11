@@ -15,6 +15,7 @@ const educationSchema = new mongoose.Schema({
       "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/university.png",
   },
   degree: String,
+  course:String,
   startDate: String,
   endDate: String,
 });

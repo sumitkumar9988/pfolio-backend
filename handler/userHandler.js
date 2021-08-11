@@ -1,7 +1,7 @@
 const User = require("./../models/userModel");
 const Education = require("./../models/educationModel");
 const Profile = require("./../models/profileModel");
-const Experience = require("./../models/educationModel");
+const Experience = require("./../models/experienceModel");
 const AppError = require("./../utils/AppError");
 const catchAsync = require("./../utils/catchAsync");
 
@@ -155,19 +155,18 @@ exports.getAllEducation = catchAsync(async (req, res, next) => {
 });
 
 exports.addEducation = catchAsync(async (req, res, next) => {
-
-
-  const education= await Education.create({
+  const education = await Education.create({
     institute: req.body.institute,
     profile: req.user.profile,
     logo: req.body.image,
     degree: req.body.degree,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
+    course: req.body.course,
   });
 
   const profile = await Profile.findById(req.user.profile);
-  console.log(education._id)
+  console.log(education._id);
   profile.education.push(education._id);
   await profile.save();
 
@@ -238,17 +237,16 @@ exports.getExperienceById = catchAsync(async (req, res, next) => {
 });
 
 exports.addExperience = catchAsync(async (req, res, next) => {
-  const experience = {
+  const experience = await Experience.create({
     jobTitle: req.body.jobTitle,
     profile: req.user.profile,
     organization: req.body.organization,
-    loogo: req.body.image,
+    logo: req.body.image,
     website: req.body.website,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     duration: req.body.duration,
-  };
-  await Experience.create(experience);
+  });
 
   const profile = await Profile.findById(req.user.profile);
   profile.experience.push(experience._id);
@@ -256,15 +254,23 @@ exports.addExperience = catchAsync(async (req, res, next) => {
 
   return res.status(200).json({
     status: "success",
-    message: "new experience add successfully ",
+    message: "new experience add successfully !",
   });
 });
 
 exports.deleteExperienceDetail = catchAsync(async (req, res, next) => {
-  const experienceDoc = await Experience.findByIdAndDelete(req.params.id);
-  if (!experienceDoc) {
+  const exp = await Experience.findById(req.params.id);
+  if (!exp) {
     return next(new AppError("No document found with that ID", 404));
   }
+
+  if (String(req.user.profile) !== String(exp.profile)) {
+    return next(
+      new AppError("You are not authorize to delete this item!", 400)
+    );
+  }
+  await Experience.findByIdAndDelete(req.params.id);
+
   res.status(200).json({
     status: "success",
     message: "Item delete successfully",
@@ -272,28 +278,31 @@ exports.deleteExperienceDetail = catchAsync(async (req, res, next) => {
 });
 
 exports.updateExperience = catchAsync(async (req, res, next) => {
-  data = req.body;
-
-  const experience = await Experience.findByIdAndUpdate(req.params.id, data, {
+  const exp = await Experience.findById(req.params.id);
+  if (!exp) {
+    return next(new AppError("No document found with that ID", 404));
+  }
+  if (String(req.user.profile) !== String(exp.profile)) {
+    return next(
+      new AppError("You are not authorize to delete this item!", 400)
+    );
+  }
+  await Experience.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
-
-  if (!experience) {
-    return next(new AppError("No document found with that ID", 404));
-  }
   res.status(201).json({
     status: "success",
     message: "Experience details update successfully",
   });
 });
 
+
 exports.addSkills = catchAsync(async (req, res, next) => {
   const skill = req.body.skill;
-  const user = await User.findById(req.user.id);
+  const user = await Profile.findById(req.user.profile);
   user.skills.push(skill);
   await user.save();
-  // console.log(user);
   return res.status(205).json({
     status: "success",
     message: "Skills add successfully",
