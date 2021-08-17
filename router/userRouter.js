@@ -12,6 +12,10 @@ router
   .delete(authController.protect, userController.deleteProfile);
 
 router
+  .route("/analtics")
+  .post(authController.protect, userController.getAnalticsData);
+
+router
   .route("/education")
   .get(authController.protect, userController.getAllEducation)
   .post(authController.protect, userController.addEducation);

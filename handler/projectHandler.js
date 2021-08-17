@@ -33,7 +33,6 @@ exports.githubCallBack = catchAsync(async (req, res, next) => {
   githubUserName = {
     gitHubAccount: response.data.login,
   };
-  // console.log(githubUserName)
   await Profile.findByIdAndUpdate(req.user.profile, githubUserName, {
     new: true,
     runValidators: true,
@@ -78,6 +77,7 @@ exports.refreshNewProject = catchAsync(async (req, res, next) => {
       name: item.name,
       repoID: item.id,
       repoUrl: item.url,
+      included:"false",
       DemoUrl: item.html_url,
       logo: "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png",
       updated_at: item.updated_at,
@@ -135,7 +135,6 @@ exports.getProjectDetails = catchAsync(async (req, res, next) => {
 
 exports.updateProjectDetails = catchAsync(async (req, res, next) => {
   const project = await Project.findById(req.params.id);
-  console.log(project);
   if (!project) {
     return next(new AppError("Project not found By id", 404));
   }

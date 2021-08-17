@@ -4,6 +4,20 @@ const Profile = require("./../models/profileModel");
 const Experience = require("./../models/experienceModel");
 const AppError = require("./../utils/AppError");
 const catchAsync = require("./../utils/catchAsync");
+const service_account = require('../utils/key.json');
+const { google } = require('googleapis');
+var dateFormat = require('dateformat');
+const reporting = google.analyticsreporting('v4');
+let scopes = ['https://www.googleapis.com/auth/analytics.readonly'];
+
+let jwt = new google.auth.JWT(
+  service_account.client_email,
+  null,
+  service_account.private_key,
+  scopes
+);
+
+let view_id = '244321056';
 
 exports.uploadImage = catchAsync(async (req, res, next) => {
   const image = req.body.image;
@@ -22,7 +36,6 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.getProfile = catchAsync(async (req, res, next) => {
-  console.log(req.user);
   if (!req.user.profile) {
     return next(
       new AppError(
@@ -166,7 +179,6 @@ exports.addEducation = catchAsync(async (req, res, next) => {
   });
 
   const profile = await Profile.findById(req.user.profile);
-  console.log(education._id);
   profile.education.push(education._id);
   await profile.save();
 
@@ -321,3 +333,116 @@ exports.removeSkills = catchAsync(async (req, res, next) => {
       "skill remove from profile",
   });
 });
+
+
+
+exports.getAnalticsData = catchAsync(async (req, res, next) => {
+
+  const profile=await Profile.findById(req.user.profile);
+  const username=profile.username;
+  const total_days = req.body.total_days || 90;
+  const today_date = dateFormat(new Date(), 'yyyy-mm-dd');
+  const milli_second_in_days = 86400000;
+  let last_date;
+
+  if (total_days === 7) {
+    last_date = new Date(new Date() - 7 * milli_second_in_days);
+  } else if (total_days === 30) {
+    last_date = new Date(new Date() - 30 * milli_second_in_days);
+  } else {
+    last_date = new Date(new Date() - 90 * milli_second_in_days);
+  }
+
+  let allDate = gernateDate(last_date, new Date());
+  last_date = dateFormat(last_date, 'yyyy-mm-dd');
+
+  let metrics_report = {
+    reportRequests: [
+      {
+        viewId: view_id,
+        dateRanges: [{ startDate: last_date, endDate: today_date }],
+        metrics: [{ expression: 'ga:pageviews' }],
+        dimensions: [{ name: 'ga:date' }, { name: 'ga:pagePath' }],
+        dimensionFilterClauses: [
+          {
+            filters: [
+              {
+                operator: 'EXACT',
+                dimensionName: 'ga:pagePath',
+                expressions: [`${username}.pfolio.me/`],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
+  try {
+    await jwt.authorize();
+    let request = {
+      headers: { 'Content-Type': 'application/json' },
+      auth: jwt,
+      resource: metrics_report,
+    };
+
+    const { data } = await reporting.reports.batchGet(request);
+    const rowData = data.reports[0].data.rows;
+    if(!rowData){
+      return next(new AppError("No Data found", 404)); 
+    }
+    const totalData = data.reports[0].data.totals;
+    const filterData = filterAnalticsData(rowData);
+
+    // filter between allDate and filterData
+
+    Object.keys(allDate).forEach(function (key) {
+      if (filterData[key]) {
+        allDate[key] = filterData[key];
+      }
+    });
+
+    //  const datewithFormat= changeDateFormat('20210708');
+    res.status(201).json({
+      status: 'sucess',
+      data: allDate,
+      totalUser: totalData[0].values[0],
+    });
+  } catch (error) {
+    return next(new AppError(error.message, 404));
+  }
+});
+
+const filterAnalticsData = (data) => {
+  let filterdata = {};
+  for (var index = 0; index < data.length; index++) {
+    let date = data[index].dimensions[0];
+    date = changeDateFormat(date);
+    const value = data[index].metrics[0].values[0];
+    filterdata[date] = value;
+  }
+  return filterdata;
+};
+// funky date format from google analtics 20210708 YYYYMMDD cahnge to DD-MM-YYYY
+const changeDateFormat = (funkyDateFormat) => {
+  const year = funkyDateFormat.slice(0, 4);
+  const month = funkyDateFormat.slice(4, 6);
+  const day = funkyDateFormat.slice(6, 8);
+  const format = year + '-' + month + '-' + day;
+  return format;
+};
+
+const gernateDate = (startDate, endDate) => {
+  const milli_second_in_days = 86400000;
+  let start = new Date(startDate);
+  let end = new Date(endDate);
+  let dt;
+
+  let data = {};
+  while (start <= end) {
+    start = new Date(start.getTime() + milli_second_in_days);
+    dt = dateFormat(start, 'yyyy-mm-dd');
+    data[dt] = 0;
+  }
+  return data;
+};

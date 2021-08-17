@@ -50,20 +50,20 @@ const profileSchema = new mongoose.Schema(
       type: String,
     },
     showBio: {
-        type: Boolean,
-        default: true,
+      type: Boolean,
+      default: true,
     },
     showEducationSection: {
-        type: Boolean,
-        default: true,
+      type: Boolean,
+      default: true,
     },
     showExperienceSection: {
-        type: Boolean,
-        default: true,
+      type: Boolean,
+      default: true,
     },
     showContactSection: {
-        type: Boolean,
-        default: true,
+      type: Boolean,
+      default: true,
     },
     skills: {
       type: [String],

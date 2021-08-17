@@ -10,7 +10,7 @@ const projectSchema = new mongoose.Schema({
   },
   included: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   repoID: {
     type: Number,
