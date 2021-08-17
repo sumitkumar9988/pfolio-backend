@@ -43,9 +43,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
   //add email to list
 
   try{
-    const url = `https://pfolio.me/`;
-    await new Email(newUser, url).sendWelcome();
-    
     const config = {
       headers: {
         "content-type": "application/json",
@@ -68,6 +65,8 @@ exports.signUp = catchAsync(async (req, res, next) => {
       data,
       config
     );
+    const url = `https://pfolio.me/`;
+    await new Email(newUser, url).sendWelcome();
     
   }catch(err){
     console.log(err);

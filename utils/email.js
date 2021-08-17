@@ -2,7 +2,7 @@ const pug = require("pug");
 const htmlToText = require("html-to-text");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(
-  "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"
+  "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"
 );
 module.exports = class Email {
   constructor(user, url) {
