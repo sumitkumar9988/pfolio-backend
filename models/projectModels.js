@@ -26,11 +26,8 @@ const projectSchema = new mongoose.Schema({
   repoUrl: {
     type: String,
   },
-  language: {
-    type: String,
-  },
-  demoSample: {
-    type: String,
+  tools: {
+    type: [String],
   },
   license: String,
   DemoUrl: {

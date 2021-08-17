@@ -1,5 +1,6 @@
 const Project = require("./../models/projectModels");
-const User = require("./../models/userModel");
+const Profile = require("./../models/profileModel");
+const Gallery = require("./../models/galleryModel");
 const AppError = require("./../utils/AppError");
 const catchAsync = require("./../utils/catchAsync");
 const axios = require("axios");
@@ -78,8 +79,7 @@ exports.refreshNewProject = catchAsync(async (req, res, next) => {
       repoID: item.id,
       repoUrl: item.url,
       DemoUrl: item.html_url,
-      logo:
-        "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png",
+      logo: "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png",
       updated_at: item.updated_at,
       description: item.description,
     };
@@ -97,16 +97,19 @@ exports.refreshNewProject = catchAsync(async (req, res, next) => {
   // !b.filter(y => y.id === i.id).length
 
   //create multiple documents
- const projectInsertedin= await Project.insertMany(itemToInsertINtoDatabase);
- console.log(projectInsertedin);
+  const projectInsertedin = await Project.insertMany(itemToInsertINtoDatabase);
+  console.log(projectInsertedin);
 
-//Add all Project into profile  
+  projectInsertedin.map((project) => {
+    user.project.push(project._id);
+  });
+
+  await user.save();
+  //Add all Project into profile
 
   const allProject = await Project.find({
     profile: req.user.profile,
   });
-
-
 
   res.status("200").json({
     status: "success",
@@ -131,36 +134,121 @@ exports.getProjectDetails = catchAsync(async (req, res, next) => {
 });
 
 exports.updateProjectDetails = catchAsync(async (req, res, next) => {
-  data = req.body;
+  const project = await Project.findById(req.params.id);
+  console.log(project);
+  if (!project) {
+    return next(new AppError("Project not found By id", 404));
+  }
 
-  const project = await Project.findByIdAndUpdate(req.params.id, data, {
+  if (String(req.user.profile) !== String(project.profile)) {
+    return next(
+      new AppError("You are not authorize to update this item!", 400)
+    );
+  }
+  await Project.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
 
-  if (!project) {
-    return next(new AppError("Project not found By id", 404));
-  }
   return res.status(200).json({
     status: "success",
     message: "Project Details Update Successully",
   });
 });
-
 
 exports.deleteProject = catchAsync(async (req, res, next) => {
- 
+  const project = await Project.findById(req.params.id);
+  if (String(req.user.profile) !== String(project.profile)) {
+    return next(
+      new AppError("You are not authorize to delete this item!", 400)
+    );
+  }
+  await Project.findByIdAndDelete(req.params.id);
+
   return res.status(200).json({
     status: "success",
-    message: "Project Details Update Successully",
+    message: "Project Delete Update Successully",
   });
 });
 
-
 exports.createProject = catchAsync(async (req, res, next) => {
- 
+  const user = await Profile.findById(req.user.profile);
+
+  const project = await Project.create({
+    profile: req.user.profile,
+    name: req.body.name,
+    images: req.body.images,
+    DemoUrl: req.body.url,
+    updated_at: req.body.updated_at,
+    description: req.body.description,
+    logo: req.body.logo,
+  });
+  user.project.push(project._id);
+  await user.save();
+
   return res.status(200).json({
     status: "success",
-    message: "Project Details Update Successully",
+    message: "New Project Add Successully",
+  });
+});
+
+exports.addGalleryImage = catchAsync(async (req, res, next) => {
+  const user = await Profile.findById(req.user.profile);
+
+  const gallery = await Gallery.create({
+    profile: req.user.profile,
+    tittle: req.body.tittle,
+    image: req.body.image,
+    date: req.body.date,
+    description: req.body.description,
+  });
+  user.gallery.push(gallery._id);
+  await user.save();
+
+  return res.status(200).json({
+    status: "success",
+    message: "New Project Add Successully",
+  });
+});
+
+exports.getAllGalleryImage = catchAsync(async (req, res, next) => {
+  const image = await Gallery.find({
+    profile: req.user.profile,
+  });
+
+  res.status("200").json({
+    status: "success",
+    length: allProject.length,
+    data: {
+      image: image,
+    },
+  });
+});
+
+exports.deleteImage = catchAsync(async (req, res, next) => {
+  const project = await Gallery.findById(req.params.id);
+  if (String(req.user.profile) !== String(project.profile)) {
+    return next(
+      new AppError("You are not authorize to delete this item!", 400)
+    );
+  }
+  await Gallery.findByIdAndDelete(req.params.id);
+
+  return res.status(200).json({
+    status: "success",
+    message: "Image Delete Update Successully",
+  });
+});
+
+exports.getProjectDetails = catchAsync(async (req, res, next) => {
+  const project = await Gallery.findById(req.params.id);
+  if (!project) {
+    return next(new AppError(" Details Not Found", 404));
+  }
+  res.status(201).json({
+    status: "success",
+    data: {
+      image: project,
+    },
   });
 });

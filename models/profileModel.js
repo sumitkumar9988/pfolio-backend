@@ -24,6 +24,7 @@ const profileSchema = new mongoose.Schema(
     project: [{ type: mongoose.Schema.ObjectId, ref: "Project" }],
     education: [{ type: mongoose.Schema.ObjectId, ref: "Education" }],
     experience: [{ type: mongoose.Schema.ObjectId, ref: "Experience" }],
+    gallery: [{ type: mongoose.Schema.ObjectId, ref: "Gallery" }],
     email: {
       type: String,
       required: [true, "Please provide your email"],

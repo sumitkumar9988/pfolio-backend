@@ -42,8 +42,19 @@ router
   .post(authController.protect, projectController.githubCallBack);
 
 router
+  .route("/gallery")
+  .get(authController.protect, projectController.getAllGalleryImage)
+  .post(authController.protect, projectController.addGalleryImage);
+
+router
+  .route("/gallery/:id")
+  .get(authController.protect, projectController.getProjectDetails)
+  .delete(authController.protect, projectController.deleteImage);
+
+router
   .route("/project")
-  .get(authController.protect, projectController.getAllUserProject);
+  .get(authController.protect, projectController.getAllUserProject)
+  .post(authController.protect, projectController.createProject);
 
 router
   .route("/project/refesh")
@@ -52,7 +63,6 @@ router
 router
   .route("/project/:id")
   .get(authController.protect, projectController.getProjectDetails)
-  .post(authController.protect, projectController.createProject)
   .patch(authController.protect, projectController.updateProjectDetails)
   .delete(authController.protect, projectController.deleteProject);
 
