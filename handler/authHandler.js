@@ -38,12 +38,14 @@ exports.signUp = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
   });
-  const url = `https://pfolio.me/`;
-  await new Email(newUser, url).sendWelcome();
+
 
   //add email to list
 
   try{
+    const url = `https://pfolio.me/`;
+    await new Email(newUser, url).sendWelcome();
+    
     const config = {
       headers: {
         "content-type": "application/json",
