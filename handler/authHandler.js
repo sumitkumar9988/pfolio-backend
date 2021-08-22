@@ -80,7 +80,7 @@ exports.googleOAuthSignup = catchAsync(async (req, res, next) => {
   const { tokenID } = req.body;
   const { payload } = await client.verifyIdToken({
     idToken: tokenID,
-    audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
+    audience: process.env.GOOGLE_OAUTH_CLIENT_ID
   });
 
   const { email, picture, name } = payload;
