@@ -1,14 +1,15 @@
 const User = require("./../models/userModel");
 const Education = require("./../models/educationModel");
 const Profile = require("./../models/profileModel");
+const Skill = require("./../models/skillModels");
 const Experience = require("./../models/experienceModel");
 const AppError = require("./../utils/AppError");
 const catchAsync = require("./../utils/catchAsync");
-const service_account = require('../utils/key.json');
-const { google } = require('googleapis');
-var dateFormat = require('dateformat');
-const reporting = google.analyticsreporting('v4');
-let scopes = ['https://www.googleapis.com/auth/analytics.readonly'];
+const service_account = require("../utils/key.json");
+const { google } = require("googleapis");
+var dateFormat = require("dateformat");
+const reporting = google.analyticsreporting("v4");
+let scopes = ["https://www.googleapis.com/auth/analytics.readonly"];
 
 let jwt = new google.auth.JWT(
   service_account.client_email,
@@ -17,7 +18,7 @@ let jwt = new google.auth.JWT(
   scopes
 );
 
-let view_id = '244321056';
+let view_id = "244321056";
 
 exports.uploadImage = catchAsync(async (req, res, next) => {
   const image = req.body.image;
@@ -310,38 +311,46 @@ exports.updateExperience = catchAsync(async (req, res, next) => {
 });
 
 exports.addSkills = catchAsync(async (req, res, next) => {
-  const skill = req.body.skill;
-  const user = await Profile.findById(req.user.profile);
-  user.skills.push(skill);
-  await user.save();
-  return res.status(205).json({
+  const skill = await Skill.create({
+    name: req.body.name,
+    profile: req.user.profile,
+    logo: req.body.logo,
+  });
+
+  const profile = await Profile.findById(req.user.profile);
+  profile.skills.push(skill._id);
+  await profile.save();
+
+  return res.status(200).json({
     status: "success",
-    message: "Skills add successfully",
+    message: "new skill add successfully !",
   });
 });
 
 exports.removeSkills = catchAsync(async (req, res, next) => {
-  const profile = await Profile.findById(req.user.profile);
-  const index = profile.skills.indexOf(req.body.skill);
-
-  if (index > -1) {
-    profile.skills.splice(index, 1);
+  const userSkill = await Skill.findById(req.params.id);
+  if (!userSkill) {
+    return next(new AppError("No document found with that ID", 404));
   }
-  return res.status(205).json({
+
+  if (String(req.user.profile) !== String(userSkill.profile)) {
+    return next(
+      new AppError("You are not authorize to delete this item!", 400)
+    );
+  }
+  await Skill.findByIdAndDelete(req.params.id);
+
+  res.status(200).json({
     status: "success",
-    message:
-      "skill remove from profile",
+    message: "Item delete successfully",
   });
 });
 
-
-
 exports.getAnalticsData = catchAsync(async (req, res, next) => {
-
-  const profile=await Profile.findById(req.user.profile);
-  const username=profile.username;
+  const profile = await Profile.findById(req.user.profile);
+  const username = profile.username;
   const total_days = req.body.total_days || 90;
-  const today_date = dateFormat(new Date(), 'yyyy-mm-dd');
+  const today_date = dateFormat(new Date(), "yyyy-mm-dd");
   const milli_second_in_days = 86400000;
   let last_date;
 
@@ -354,21 +363,21 @@ exports.getAnalticsData = catchAsync(async (req, res, next) => {
   }
 
   let allDate = gernateDate(last_date, new Date());
-  last_date = dateFormat(last_date, 'yyyy-mm-dd');
+  last_date = dateFormat(last_date, "yyyy-mm-dd");
 
   let metrics_report = {
     reportRequests: [
       {
         viewId: view_id,
         dateRanges: [{ startDate: last_date, endDate: today_date }],
-        metrics: [{ expression: 'ga:pageviews' }],
-        dimensions: [{ name: 'ga:date' }, { name: 'ga:pagePath' }],
+        metrics: [{ expression: "ga:pageviews" }],
+        dimensions: [{ name: "ga:date" }, { name: "ga:pagePath" }],
         dimensionFilterClauses: [
           {
             filters: [
               {
-                operator: 'EXACT',
-                dimensionName: 'ga:pagePath',
+                operator: "EXACT",
+                dimensionName: "ga:pagePath",
                 expressions: [`${username}.pfolio.me/`],
               },
             ],
@@ -381,15 +390,15 @@ exports.getAnalticsData = catchAsync(async (req, res, next) => {
   try {
     await jwt.authorize();
     let request = {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
       auth: jwt,
       resource: metrics_report,
     };
 
     const { data } = await reporting.reports.batchGet(request);
     const rowData = data.reports[0].data.rows;
-    if(!rowData){
-      return next(new AppError("No Data found", 404)); 
+    if (!rowData) {
+      return next(new AppError("No Data found", 404));
     }
     const totalData = data.reports[0].data.totals;
     const filterData = filterAnalticsData(rowData);
@@ -404,7 +413,7 @@ exports.getAnalticsData = catchAsync(async (req, res, next) => {
 
     //  const datewithFormat= changeDateFormat('20210708');
     res.status(201).json({
-      status: 'sucess',
+      status: "sucess",
       data: allDate,
       totalUser: totalData[0].values[0],
     });
@@ -428,7 +437,7 @@ const changeDateFormat = (funkyDateFormat) => {
   const year = funkyDateFormat.slice(0, 4);
   const month = funkyDateFormat.slice(4, 6);
   const day = funkyDateFormat.slice(6, 8);
-  const format = year + '-' + month + '-' + day;
+  const format = year + "-" + month + "-" + day;
   return format;
 };
 
@@ -441,7 +450,7 @@ const gernateDate = (startDate, endDate) => {
   let data = {};
   while (start <= end) {
     start = new Date(start.getTime() + milli_second_in_days);
-    dt = dateFormat(start, 'yyyy-mm-dd');
+    dt = dateFormat(start, "yyyy-mm-dd");
     data[dt] = 0;
   }
   return data;

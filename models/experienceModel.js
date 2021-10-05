@@ -16,7 +16,7 @@ const workExperienceSchema = new mongoose.Schema({
   logo: {
     type: String,
     default:
-      "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/company.png",
+      "https://res.cloudinary.com/sumit9988/image/upload/v1633450956/company_g2thvg.png",
   },
   website: String,
   startDate: String,

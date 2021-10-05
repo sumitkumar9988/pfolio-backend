@@ -25,6 +25,7 @@ const profileSchema = new mongoose.Schema(
     education: [{ type: mongoose.Schema.ObjectId, ref: "Education" }],
     experience: [{ type: mongoose.Schema.ObjectId, ref: "Experience" }],
     gallery: [{ type: mongoose.Schema.ObjectId, ref: "Gallery" }],
+    skills: [{ type: mongoose.Schema.ObjectId, ref: "Skill" }],
     email: {
       type: String,
       required: [true, "Please provide your email"],
@@ -42,41 +43,38 @@ const profileSchema = new mongoose.Schema(
 
     photo: {
       type: String,
+      default:
+        "https://res.cloudinary.com/sumit9988/image/upload/v1633450915/user_i3mbdx.jpg",
     },
-    backGroundColor: {
+    bgColor1: {
       type: String,
     },
-    textColor: {
+    bgColor2: {
       type: String,
     },
-    showBio: {
-      type: Boolean,
-      default: true,
+    bgTextColor: {
+      type: String,
     },
-    showEducationSection: {
-      type: Boolean,
-      default: true,
+    textColor1: {
+      type: String,
     },
-    showExperienceSection: {
-      type: Boolean,
-      default: true,
-    },
-    showContactSection: {
-      type: Boolean,
-      default: true,
-    },
-    skills: {
-      type: [String],
-    },
-    location: {
+    textColor2: {
       type: String,
     },
 
-    bio: {
+    location: {
       type: String,
-      maxlength: [100, "length of bio should not be greater than 100 words"],
     },
-    intrestedIn: {
+    website: {
+      type: String,
+      unique: [true, "Website already used by someone"],
+    },
+
+    aboutYou: {
+      type: String,
+      maxlength: [30, "length of bio should not be greater than 100 words"],
+    },
+    bio: {
       type: String,
     },
 
