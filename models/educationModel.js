@@ -5,22 +5,19 @@ const educationSchema = new mongoose.Schema({
     type: String,
     required: [true, "Enter your Institute Name"],
   },
-  user: {
+  profile: {
     type: mongoose.Schema.ObjectId,
     ref: "Profile",
   },
-  basicinfo: String,
-  instituteLogo: {
+  logo: {
     type: String,
     default:
-      "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/university.png",
+      "https://res.cloudinary.com/sumit9988/image/upload/v1633450956/college_sjwiqx.png",
   },
-  city: String,
   degree: String,
+  course:String,
   startDate: String,
   endDate: String,
-  grade: String,
-  activitiesAndSocieties: String,
 });
 
 const Education = mongoose.model("Education", educationSchema);

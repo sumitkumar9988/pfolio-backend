@@ -5,7 +5,7 @@ const workExperienceSchema = new mongoose.Schema({
     type: "string",
     required: [true, "Enter tittle of work experience"],
   },
-  user: {
+  profile: {
     type: mongoose.Schema.ObjectId,
     ref: "Profile",
   },
@@ -13,20 +13,15 @@ const workExperienceSchema = new mongoose.Schema({
     type: String,
     required: [true, "Enter your organization Name"],
   },
-  organizationLogo: {
+  logo: {
     type: String,
     default:
-      "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/company.png",
+      "https://res.cloudinary.com/sumit9988/image/upload/v1633450956/company_g2thvg.png",
   },
-  remote: {
-    type: Boolean,
-  },
-  city: String,
   website: String,
   startDate: String,
   endDate: String,
   duration: Number,
-  responsibilities: String,
 });
 
 const Experience = mongoose.model("Experience", workExperienceSchema);

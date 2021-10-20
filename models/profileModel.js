@@ -21,9 +21,11 @@ const profileSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "User",
     },
-    prooject: [{ type : mongoose.Schema.ObjectId, ref: 'Project' }], 
-    education: [{ type : mongoose.Schema.ObjectId, ref: 'Education' }],
-    experience: [{ type : mongoose.Schema.ObjectId, ref: 'Experience' }],
+    project: [{ type: mongoose.Schema.ObjectId, ref: "Project" }],
+    education: [{ type: mongoose.Schema.ObjectId, ref: "Education" }],
+    experience: [{ type: mongoose.Schema.ObjectId, ref: "Experience" }],
+    gallery: [{ type: mongoose.Schema.ObjectId, ref: "Gallery" }],
+    skills: [{ type: mongoose.Schema.ObjectId, ref: "Skill" }],
     email: {
       type: String,
       required: [true, "Please provide your email"],
@@ -36,25 +38,43 @@ const profileSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["male", "female","other"],
+      enum: ["male", "female", "other"],
     },
 
     photo: {
       type: String,
+      default:
+        "https://res.cloudinary.com/sumit9988/image/upload/v1633450915/user_i3mbdx.jpg",
+    },
+    bgColor1: {
+      type: String,
+    },
+    bgColor2: {
+      type: String,
+    },
+    bgTextColor: {
+      type: String,
+    },
+    textColor1: {
+      type: String,
+    },
+    textColor2: {
+      type: String,
     },
 
-    skills: {
-      type: [String],
-    },
     location: {
       type: String,
     },
-
-    bio: {
+    website: {
       type: String,
-      maxlength: [100, "length of bio should not be greater than 100 words"],
+      unique: [true, "Website already used by someone"],
     },
-    intrestedIn: {
+
+    aboutYou: {
+      type: String,
+      maxlength: [30, "length of bio should not be greater than 100 words"],
+    },
+    bio: {
       type: String,
     },
 

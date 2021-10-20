@@ -1,14 +1,35 @@
 const express = require("express");
 const axios = require("axios");
 const sgMail = require("@sendgrid/mail");
+const Profile = require("../models/profileModel");
 sgMail.setApiKey(
   "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"
 );
 const router = express.Router();
 
+router.get("/:username", async function (req, res) {
+  const { username } = req.params;
+  const profile = await Profile.findOne({ username: username })
+    .populate("education")
+    .populate("experience")
+    .populate("gallery")
+    .populate("project", null, {
+      included: true,
+    });
+  if (!profile) {
+    return res.status(400).json({
+      status: "fail",
+      message: "username not found",
+    });
+  }
+  res.status(200).json({
+    status: "sucess",
+    data: profile,
+  });
+});
+
 router.post("/newsletter", async function (req, res) {
   const { email } = req.body;
-  // console.log(email);
   const config = {
     headers: {
       "content-type": "application/json",
@@ -34,40 +55,6 @@ router.post("/newsletter", async function (req, res) {
   res.json({
     success: "Thankyou for Subscribe",
   });
-});
-
-router.post("/createTailwind", async function (req, res) {
-  const { email } = req.body;
-  try {
-    const config = {
-      headers: {
-        "content-type": "application/json",
-        authorization:
-          "Bearer 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",
-      },
-    };
-
-    body = {
-      list_ids: ["9c100f5c-3556-4044-b073-5c6967a5bbec"],
-      contacts: [
-        {
-          email: `${email}`,
-        },
-      ],
-    };
-    await axios.put(
-      "https://api.sendgrid.com/v3/marketing/contacts",
-      body,
-      config
-    );
-    res.json({
-      success: "Thankyou for Subscribe",
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-    });
-  }
 });
 
 router.post("/sendEmail", async function (req, res) {

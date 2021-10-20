@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const projectSchema = new mongoose.Schema({
-  user: {
+  profile: {
     type: mongoose.Schema.ObjectId,
     ref: "Profile",
   },
@@ -10,7 +10,7 @@ const projectSchema = new mongoose.Schema({
   },
   included: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   repoID: {
     type: Number,
@@ -18,19 +18,16 @@ const projectSchema = new mongoose.Schema({
   images: {
     type: [String],
   },
-  projectLogo: {
+  logo: {
     type: String,
     default:
-      "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png",
+      "https://res.cloudinary.com/sumit9988/image/upload/v1633450957/project_vumbkv.png",
   },
   repoUrl: {
     type: String,
   },
-  language: {
-    type: String,
-  },
-  demoSample:{
-    type:String,
+  tools: {
+    type: [String],
   },
   license: String,
   DemoUrl: {

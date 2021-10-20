@@ -4,105 +4,75 @@ const userController = require("./../handler/userHandler");
 const projectController = require("./../handler/projectHandler");
 const router = express.Router();
 
-
 router
   .route("/")
-  .get(authController.protect, userController.userDetail)
-  .patch(authController.protect, userController.updateUserDetail)
-  .delete(authController.protect, userController.deleteUser);
+  .get(authController.protect, userController.getProfile)
+  .post(authController.protect, userController.createProfile)
+  .patch(authController.protect, userController.updateProfile)
+  .delete(authController.protect, userController.deleteProfile);
 
-router.patch(
-  "/social",
-  authController.protect,
-  userController.updateSocialNetworking
-);
+router
+  .route("/analtics")
+  .post(authController.protect, userController.getAnalticsData);
 
-router.get(
-  "/education",
-  authController.protect,
-  userController.getAllEducation
-);
-router.post("/education", authController.protect, userController.addEducation);
-router.delete(
-  "/education/:id",
-  authController.protect,
-  userController.deleteEducationDetail
-);
-router.get(
-  "/education/:id",
-  authController.protect,
-  userController.getEducationDetail
-);
-router.patch(
-  "/education/:id",
-  authController.protect,
-  userController.updateEducation
-);
+router
+  .route("/education")
+  .get(authController.protect, userController.getAllEducation)
+  .post(authController.protect, userController.addEducation);
 
-router.get(
-  "/experience",
-  authController.protect,
-  userController.allUserExeprience
-);
-router.post(
-  "/experience",
-  authController.protect,
+router
+  .route("/education/:id")
+  .get(authController.protect, userController.getEducationDetail)
+  .patch(authController.protect, userController.updateEducation)
+  .delete(authController.protect, userController.deleteEducation);
 
-  userController.addExperience
-);
-router.get(
-  "/experience/:id",
-  authController.protect,
-  userController.getExperienceById
-);
-router.delete(
-  "/experience/:id",
-  authController.protect,
-  userController.deleteExperienceDetail
-);
-router.patch(
-  "/experience/:id",
-  authController.protect,
-  userController.updateExperience
-);
+router
+  .route("/experience")
+  .get(authController.protect, userController.allUserExeprience)
+  .post(authController.protect, userController.addExperience);
 
-router.get(
-  "/githubauth",
-  authController.protect,
-  projectController.guthubOAoth
-);
-router.post(
-  "/github/callback",
-  authController.protect,
-  projectController.githubCallBack
-);
+router
+  .route("/experience/:id")
+  .get(authController.protect, userController.getExperienceById)
+  .patch(authController.protect, userController.updateExperience)
+  .delete(authController.protect, userController.deleteExperienceDetail);
 
-router.get(
-  "/project",
-  authController.protect,
-  projectController.getAllUserProject
-);
+router
+  .route("/githubauth")
+  .get(authController.protect, projectController.guthubOAoth);
 
-router.get(
-  "/project/refesh",
-  authController.protect,
-  projectController.refreshNewProject
-);
+router
+  .route("/github/callback")
+  .post(authController.protect, projectController.githubCallBack);
 
-router.get(
-  "/project/:id",
-  authController.protect,
-  projectController.getProjectDetails
-);
-router.patch(
-  "/project/:id",
-  authController.protect,
+router
+  .route("/gallery")
+  .get(authController.protect, projectController.getAllGalleryImage)
+  .post(authController.protect, projectController.addGalleryImage);
 
-  projectController.updateProjectDetails
-);
+router
+  .route("/gallery/:id")
+  .get(authController.protect, projectController.getProjectDetails)
+  .delete(authController.protect, projectController.deleteImage);
 
+router
+  .route("/project")
+  .get(authController.protect, projectController.getAllUserProject)
+  .post(authController.protect, projectController.createProject);
 
-router.post("/addskills", authController.protect, userController.addSkills);
+router
+  .route("/project/refesh")
+  .get(authController.protect, projectController.refreshNewProject);
 
+router
+  .route("/project/:id")
+  .get(authController.protect, projectController.getProjectDetails)
+  .patch(authController.protect, projectController.updateProjectDetails)
+  .delete(authController.protect, projectController.deleteProject);
+
+router
+  .route("/skills")
+  .post(authController.protect, userController.addSkills)
+  .delete(authController.protect, userController.removeSkills);
 
 module.exports = router;
