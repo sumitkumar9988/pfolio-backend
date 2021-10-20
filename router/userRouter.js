@@ -75,4 +75,8 @@ router
   .post(authController.protect, userController.addSkills)
   .delete(authController.protect, userController.removeSkills);
 
+router
+  .route("/check-domain")
+  .post(userController.checkDomain)
+
 module.exports = router;

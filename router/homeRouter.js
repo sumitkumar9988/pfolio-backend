@@ -13,6 +13,7 @@ router.get("/:username", async function (req, res) {
     .populate("education")
     .populate("experience")
     .populate("gallery")
+    .populate("skills")
     .populate("project", null, {
       included: true,
     });
