@@ -6,7 +6,6 @@ const catchAsync = require("./../utils/catchAsync");
 const Email = require("./../utils/email");
 const { OAuth2Client } = require("google-auth-library");
 const axios = require("axios");
-const { userInfo } = require("os");
 
 const client = new OAuth2Client(process.env.GOOGLE_OAUTH_CLIENT_ID);
 
@@ -39,41 +38,49 @@ exports.signUp = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
   });
-  const url = `https://pfolio.me/`;
-  await new Email(newUser, url).sendWelcome();
+
 
   //add email to list
-  const config = {
-    headers: {
-      "content-type": "application/json",
-      authorization:
-        "Bearer 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",
-    },
-  };
 
-  data = {
-    list_ids: ["ef8e9cc4-ff7b-4a57-a1b4-98a58eab2260"],
-    contacts: [
-      {
-        email: `${newUser.email}`,
-        first_name: `${newUser.name}`,
+  try{
+    const config = {
+      headers: {
+        "content-type": "application/json",
+        authorization:
+          "Bearer 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",
       },
-    ],
-  };
-  await axios.put(
-    "https://api.sendgrid.com/v3/marketing/contacts",
-    data,
-    config
-  );
+    };
+  
+    data = {
+      list_ids: ["ef8e9cc4-ff7b-4a57-a1b4-98a58eab2260"],
+      contacts: [
+        {
+          email: `${newUser.email}`,
+          first_name: `${newUser.name}`,
+        },
+      ],
+    };
+    await axios.put(
+      "https://api.sendgrid.com/v3/marketing/contacts",
+      data,
+      config
+    );
+    const url = `https://pfolio.me/`;
+    await new Email(newUser, url).sendWelcome();
+    
+  }catch(err){
+    console.log(err);
+  }
 
   createSendToken(newUser, 201, res);
+
 });
 
 exports.googleOAuthSignup = catchAsync(async (req, res, next) => {
   const { tokenID } = req.body;
   const { payload } = await client.verifyIdToken({
     idToken: tokenID,
-    audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
+    audience: process.env.GOOGLE_OAUTH_CLIENT_ID
   });
 
   const { email, picture, name } = payload;
