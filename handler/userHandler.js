@@ -45,7 +45,7 @@ exports.getProfile = catchAsync(async (req, res, next) => {
       )
     );
   }
-  const profile = await Profile.findById(req.user.profile);
+  const profile = await Profile.findById(req.user.profile).select('-skills -education -experience -project -__v');
   if (!profile) {
     return next(
       new AppError(
@@ -312,7 +312,7 @@ exports.updateExperience = catchAsync(async (req, res, next) => {
 
 exports.addSkills = catchAsync(async (req, res, next) => {
   const skill = await Skill.create({
-    name: req.body.name,
+    skill: req.body.skill,
     profile: req.user.profile,
     logo: req.body.logo,
   });
@@ -344,6 +344,22 @@ exports.removeSkills = catchAsync(async (req, res, next) => {
     status: "success",
     message: "Item delete successfully",
   });
+});
+
+
+exports.checkDomain = catchAsync(async (req, res, next) => {
+
+  const data = await Profile.findOne({domain:req.body.domain});
+  if (!data) {
+    return next(new AppError("Domain not exist", ));
+  }
+  else {
+    res.status(200).json({
+      status: "success",
+      message: "Domain exist!",
+    });
+  }
+
 });
 
 exports.getAnalticsData = catchAsync(async (req, res, next) => {

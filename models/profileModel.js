@@ -65,7 +65,7 @@ const profileSchema = new mongoose.Schema(
     location: {
       type: String,
     },
-    website: {
+    domain: {
       type: String,
       unique: [true, "Website already used by someone"],
     },
