@@ -72,6 +72,7 @@ router
 
 router
   .route("/skills")
+  .get(authController.protect, userController.getAllSkills)
   .post(authController.protect, userController.addSkills)
   .delete(authController.protect, userController.removeSkills);
 
