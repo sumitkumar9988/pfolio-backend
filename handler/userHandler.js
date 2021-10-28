@@ -168,6 +168,17 @@ exports.getAllEducation = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getAllSkills = catchAsync(async (req, res, next) => {
+  const skills = await Skill.find({
+    profile: req.user.profile,
+  });
+  res.status(201).json({
+    status: "success",
+    length: skills.length,
+    data: skills,
+  });
+});
+
 exports.addEducation = catchAsync(async (req, res, next) => {
   const education = await Education.create({
     institute: req.body.institute,
