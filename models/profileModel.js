@@ -34,7 +34,7 @@ const profileSchema = new mongoose.Schema(
     },
     profession: {
       type: String,
-      enum: ["developer", "designer"],
+      enum: ["Developer", "Designer"],
     },
     gender: {
       type: String,
@@ -67,17 +67,15 @@ const profileSchema = new mongoose.Schema(
     },
     domain: {
       type: String,
-      unique: [true, "Website already used by someone"],
     },
 
     aboutYou: {
       type: String,
-      maxlength: [30, "length of bio should not be greater than 100 words"],
+      maxlength: [60, "length of bio should not be greater than 60 words"],
     },
     bio: {
       type: String,
     },
-
     twitterAcount: { type: String },
     facebookAccount: { type: String },
     linkedInAccount: { type: String },
