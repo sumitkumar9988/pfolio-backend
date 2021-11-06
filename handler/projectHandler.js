@@ -40,7 +40,6 @@ exports.githubCallBack = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: "success",
-    redirect: "/success",
     data: {
       username: response.data.login,
       name: response.data.name,

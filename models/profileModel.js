@@ -34,7 +34,6 @@ const profileSchema = new mongoose.Schema(
     },
     profession: {
       type: String,
-      enum: ["Developer", "Designer"],
     },
     gender: {
       type: String,
@@ -73,6 +72,9 @@ const profileSchema = new mongoose.Schema(
       type: String,
       maxlength: [60, "length of bio should not be greater than 60 words"],
     },
+    resume: {
+      type: String
+    },
     bio: {
       type: String,
     },
@@ -86,6 +88,9 @@ const profileSchema = new mongoose.Schema(
     mediumAccount: { type: String },
     dribbleAccount: { type: String },
     codeforcesAccount: { type: String },
+    domainChangeDate: {
+      type: Date
+    },
 
     lookingForJob: {
       type: Boolean,
