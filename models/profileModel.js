@@ -47,18 +47,27 @@ const profileSchema = new mongoose.Schema(
     },
     bgColor1: {
       type: String,
+      default:"bg-black"
     },
     bgColor2: {
       type: String,
+      default:"bg-gray-900"
+
     },
     bgTextColor: {
       type: String,
+      default:"bg-white"
+
     },
     textColor1: {
       type: String,
+      default:"text-white"
+
     },
     textColor2: {
       type: String,
+      default:"text-gray-200"
+
     },
 
     location: {

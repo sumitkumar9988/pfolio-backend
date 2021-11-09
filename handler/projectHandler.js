@@ -4,6 +4,8 @@ const Gallery = require("./../models/galleryModel");
 const AppError = require("./../utils/AppError");
 const catchAsync = require("./../utils/catchAsync");
 const axios = require("axios");
+const moment = require('moment');
+
 
 exports.guthubOAoth = catchAsync(async (req, res, next) => {
   res.status("200").json({
@@ -75,11 +77,11 @@ exports.refreshNewProject = catchAsync(async (req, res, next) => {
       profile: req.user.profile,
       name: item.name,
       repoID: item.id,
-      repoUrl: item.url,
+      repoUrl: item.html_url,
       included:"false",
       DemoUrl: item.html_url,
       logo: "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png",
-      updated_at: item.updated_at,
+      updated_at: moment(item.updated_at).format('YYYY-MM-DD'),
       description: item.description,
     };
   });
@@ -126,9 +128,7 @@ exports.getProjectDetails = catchAsync(async (req, res, next) => {
   }
   res.status(201).json({
     status: "success",
-    data: {
-      project: project,
-    },
+    data: project,
   });
 });
 
@@ -176,7 +176,7 @@ exports.createProject = catchAsync(async (req, res, next) => {
     profile: req.user.profile,
     name: req.body.name,
     images: req.body.images,
-    DemoUrl: req.body.url,
+    DemoUrl: req.body.DemoUrl,
     updated_at: req.body.updated_at,
     description: req.body.description,
     logo: req.body.logo,
@@ -238,15 +238,3 @@ exports.deleteImage = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getProjectDetails = catchAsync(async (req, res, next) => {
-  const project = await Gallery.findById(req.params.id);
-  if (!project) {
-    return next(new AppError(" Details Not Found", 404));
-  }
-  res.status(201).json({
-    status: "success",
-    data: {
-      image: project,
-    },
-  });
-});
