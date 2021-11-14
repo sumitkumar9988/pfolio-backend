@@ -78,4 +78,33 @@ router.post("/sendEmail", async function(req, res) {
         });
 });
 
+
+router.get("/domain", async function(req, res) {
+    if(!req.headers.domain){
+        return res.status(400).json({
+            status: "fail",
+            message: "Domain not exist!",
+        });
+    }
+    const profile = await Profile.findOne({ domain: req.headers.domain})
+        .populate("education")
+        .populate("experience")
+        .populate("gallery")
+        .populate("skills")
+        .populate("project", null, {
+            included: true,
+        });
+    if (!profile) {
+        return res.status(400).json({
+            status: "fail",
+            message: "Domain not exist!d",
+        });
+    }
+    res.status(200).json({
+        status: "sucess",
+        data: profile,
+    });
+});
+
+
 module.exports = router;

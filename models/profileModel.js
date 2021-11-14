@@ -96,7 +96,7 @@ const profileSchema = new mongoose.Schema(
     spojAccount: { type: String },
     mediumAccount: { type: String },
     dribbleAccount: { type: String },
-    codeforcesAccount: { type: String },
+    behanceAccount: { type: String },
     domainChangeDate: {
       type: Date
     },

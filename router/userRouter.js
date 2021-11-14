@@ -85,5 +85,7 @@ router
     .post(authController.protect, userController.updateDomain);
 
 router.route("/check-domain").post(userController.checkDomain);
+router.route("/domain").get(userController.domain);
+
 
 module.exports = router;

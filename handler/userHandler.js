@@ -363,11 +363,33 @@ exports.removeSkills = catchAsync(async(req, res, next) => {
 exports.checkDomain = catchAsync(async(req, res, next) => {
     const data = await Profile.findOne({ domain: req.body.domain });
     if (!data) {
-        return next(new AppError("Domain not exist"));
+        return next(new AppError("Domain not exist",404));
     } else {
         res.status(200).json({
             status: "success",
             message: "Domain exist!",
+        });
+    }
+});
+
+exports.domain = catchAsync(async(req, res, next) => {
+    console.log(req.headers.domain);
+    if(!req.headers.domain){
+        return next(new AppError("Domain not exist!",404));
+    }
+    const data = await Profile.findOne({ domain: req.headers.domain}).populate("education")
+    .populate("experience")
+    .populate("gallery")
+    .populate("skills")
+    .populate("project", null, {
+        included: true,
+    });;
+    if (!data) {
+        return next(new AppError("Domain not exist!",404));
+    } else {
+        res.status(200).json({
+            status: "success",
+            data:data
         });
     }
 });
