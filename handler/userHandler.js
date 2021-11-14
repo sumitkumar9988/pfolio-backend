@@ -374,7 +374,16 @@ exports.checkDomain = catchAsync(async(req, res, next) => {
 
 exports.domain = catchAsync(async(req, res, next) => {
     console.log(req.headers.domain);
-    const data = await Profile.findOne({ domain: req.headers.domain});
+    if(!req.headers.domain){
+        return next(new AppError("Domain not exist!",404));
+    }
+    const data = await Profile.findOne({ domain: req.headers.domain}).populate("education")
+    .populate("experience")
+    .populate("gallery")
+    .populate("skills")
+    .populate("project", null, {
+        included: true,
+    });;
     if (!data) {
         return next(new AppError("Domain not exist!",404));
     } else {
