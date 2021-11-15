@@ -18,7 +18,7 @@ let jwt = new google.auth.JWT(
     scopes
 );
 
-let view_id = "244321056";
+let view_id = "255381018";
 
 exports.uploadImage = catchAsync(async(req, res, next) => {
     const image = req.body.image;
@@ -63,7 +63,15 @@ exports.getProfile = catchAsync(async(req, res, next) => {
 });
 
 exports.createProfile = catchAsync(async(req, res, next) => {
-    console.log(req.user);
+    console.log(req.body.username)
+    if(!req.body.username){
+        return next(
+            new AppError(
+                "Enter your unique username!",
+                404
+            )
+        ); 
+    }
     const profile = await Profile.findById(req.user.profile);
     if (profile) {
         const updatedProfile = await Profile.findByIdAndUpdate(
@@ -74,32 +82,27 @@ exports.createProfile = catchAsync(async(req, res, next) => {
                 runValidators: true,
             }
         );
-
-        res.status(200).json({
-            status: "success",
-            data: updatedProfile,
+    }else{
+        const newProfile = await Profile.create({
+            user: req.user.id,
+            name: req.user.name,
+            email: req.user.email,
+            photo: req.user.photo,
+            username: req.body.username,
         });
+    
+        await User.findByIdAndUpdate(
+            req.user.id, {
+                profile: newProfile._id,
+            }, {
+                new: true,
+                runValidators: true,
+            }
+        );
     }
-
-    const newProfile = await Profile.create({
-        user: req.user.id,
-        name: req.user.name,
-        email: req.user.email,
-        photo: req.user.photo,
-        username: req.body.username,
-    });
-
-    await User.findByIdAndUpdate(
-        req.user.id, {
-            profile: newProfile._id,
-        }, {
-            new: true,
-            runValidators: true,
-        }
-    );
     res.status(200).json({
         status: "success",
-        data: newProfile,
+        message: 'Profile Succussfully created !',
     });
 });
 
@@ -416,8 +419,13 @@ exports.updateDomain = catchAsync(async(req, res, next) => {
 
 exports.getAnalticsData = catchAsync(async(req, res, next) => {
     const profile = await Profile.findById(req.user.profile);
-    const username = profile.username;
-    const total_days = req.body.total_days || 90;
+    if(!profile.domain){
+        return next(
+            new AppError("You Don't add any domain yet ! Please setup your domain")
+        );
+    }
+    const website = profile.domain;
+    const total_days = 30;
     const today_date = dateFormat(new Date(), "yyyy-mm-dd");
     const milli_second_in_days = 86400000;
     let last_date;
@@ -432,6 +440,7 @@ exports.getAnalticsData = catchAsync(async(req, res, next) => {
 
     let allDate = gernateDate(last_date, new Date());
     last_date = dateFormat(last_date, "yyyy-mm-dd");
+    console.log(website);
 
     let metrics_report = {
         reportRequests: [{
@@ -443,7 +452,7 @@ exports.getAnalticsData = catchAsync(async(req, res, next) => {
                 filters: [{
                     operator: "EXACT",
                     dimensionName: "ga:pagePath",
-                    expressions: [`${username}.pfolio.me/`],
+                    expressions: [`${website}/`],
                 }, ],
             }, ],
         }, ],
