@@ -13,7 +13,7 @@ router
 
 router
     .route("/analtics")
-    .post(authController.protect, userController.getAnalticsData);
+    .get(authController.protect, userController.getAnalticsData);
 
 router
     .route("/education")
