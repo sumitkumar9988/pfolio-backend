@@ -12,7 +12,7 @@ const educationSchema = new mongoose.Schema({
   logo: {
     type: String,
     default:
-      "https://res.cloudinary.com/sumit9988/image/upload/v1633450956/college_sjwiqx.png",
+      "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/university.png",
   },
   degree: String,
   course:String,

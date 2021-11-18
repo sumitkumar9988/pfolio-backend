@@ -183,10 +183,11 @@ exports.getSkillsByID = catchAsync(async(req, res, next) => {
 });
 
 exports.addEducation = catchAsync(async(req, res, next) => {
+    const image=req.body.image||"https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/university.png";
     const education = await Education.create({
         institute: req.body.institute,
         profile: req.user.profile,
-        logo: req.body.image,
+        logo: image,
         degree: req.body.degree,
         startDate: req.body.startDate,
         endDate: req.body.endDate,
@@ -267,11 +268,12 @@ exports.getExperienceById = catchAsync(async(req, res, next) => {
 });
 
 exports.addExperience = catchAsync(async(req, res, next) => {
+    const image=req.body.image||"https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/company.png";
     const experience = await Experience.create({
         jobTitle: req.body.jobTitle,
         profile: req.user.profile,
         organization: req.body.organization,
-        logo: req.body.image,
+        logo: image,
         website: req.body.website,
         startDate: req.body.startDate,
         endDate: req.body.endDate,
