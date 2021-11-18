@@ -39,7 +39,7 @@ router.post("/newsletter", async function(req, res) {
     };
 
     body = {
-        list_ids: ["7d7c95e8-6543-4265-8eb3-38bd1f7aa2a4"],
+        list_ids: ["ef8e9cc4-ff7b-4a57-a1b4-98a58eab2260"],
         contacts: [{
             email: `${email}`,
         }, ],

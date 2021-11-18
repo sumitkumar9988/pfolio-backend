@@ -21,7 +21,7 @@ const projectSchema = new mongoose.Schema({
   logo: {
     type: String,
     default:
-      "https://res.cloudinary.com/sumit9988/image/upload/v1633450957/project_vumbkv.png",
+      "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png",
   },
   repoUrl: {
     type: String,

@@ -172,10 +172,12 @@ exports.deleteProject = catchAsync(async (req, res, next) => {
 exports.createProject = catchAsync(async (req, res, next) => {
   const user = await Profile.findById(req.user.profile);
 
+  const image=req.body.image || "https://firstletter-multimedia.s3.ap-south-1.amazonaws.com/projectIcon.png";
+
   const project = await Project.create({
     profile: req.user.profile,
     name: req.body.name,
-    images: req.body.images,
+    logo: image,
     DemoUrl: req.body.DemoUrl,
     updated_at: req.body.updated_at,
     description: req.body.description,
