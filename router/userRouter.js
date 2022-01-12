@@ -86,6 +86,7 @@ router
 
 router.route("/check-domain").post(userController.checkDomain);
 router.route("/domain").get(userController.domain);
+router.route("/addToWaitlist").post(userController.addToWaitlist);
 
 
 module.exports = router;
